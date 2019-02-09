@@ -1099,9 +1099,6 @@ SET(HDRS
     include/ais.h
     include/pluginmanager.h
     include/ocpn_plugin.h
-    include/wx/json_defs.h
-    include/wx/jsonwriter.h
-    include/wx/jsonreader.h
     include/styles.h
     include/toolbar.h
     include/compass.h
@@ -1202,9 +1199,6 @@ SET(SRCS
     src/AboutFrameImpl.cpp
     src/ais.cpp
     src/pluginmanager.cpp
-    src/wxJSON/jsonwriter.cpp
-    src/wxJSON/jsonreader.cpp
-    src/wxJSON/jsonval.cpp
     src/styles.cpp
     src/toolbar.cpp
     src/compass.cpp
@@ -1309,6 +1303,10 @@ IF(OPENGL_FOUND)
   )
 ENDIF(OPENGL_FOUND)
 
+
+add_subdirectory(libs/wxJSON)
+INCLUDE_DIRECTORIES(${CMAKE_SOURCE_DIR}/libs/wxJSON/include)
+SET(EXTRA_LIBS ${EXTRA_LIBS} WXJSON)
 
 IF(TINYXML_FOUND)
   message (STATUS "Building with system tinyxml")

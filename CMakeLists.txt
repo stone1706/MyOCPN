@@ -917,73 +917,7 @@ IF(OCPN_USE_LZMA)
   ENDIF(LIBLZMA_FOUND)
 ENDIF(OCPN_USE_LZMA)
 
-#
-# Sound setup
-#
-FIND_PROGRAM(APLAY aplay)
-FIND_PROGRAM(AFPLAY afplay)
-SET(SYSTEM_SOUND_CMD "\"\"")
-IF (APLAY)
-  SET(SYSTEM_SOUND_CMD "\"aplay %s\"")
-ELSEIF (AFPLAY)
-  SET(SYSTEM_SOUND_CMD "\"afplay %s\"")
-ELSEIF (WIN32)
-  SET(SYSTEM_SOUND_CMD
-    "\"PowerShell (New-Object Media.SoundPlayer \\\\\\\"%s\\\\\\\").PlaySync();\"")
-ENDIF ()
-
-SET (HAVE_SYSTEM_CMD_SOUND "")
-IF (NOT (ENABLE_SYSTEM_CMD_SOUND MATCHES OFF))
-  IF (APLAY OR AFPLAY OR WIN32)
-    SET(HAVE_SYSTEM_CMD_SOUND 1)
-  ELSEIF (ENABLE_SYSTEM_CMD_SOUND MATCHES "ON")
-    MESSAGE(WARNING
-      "ENABLE_SYSTEM_CMD_SOUND is set but I cannot find aplay(1) or afplay(1)")
-    SET(HAVE_SYSTEM_CMD_SOUND "")
-  ENDIF()
-ENDIF()
-
-IF (WIN32)
-  SET (DEFAULT_PA OFF)
-ELSE (WIN32)
-  SET (DEFAULT_PA ON)
-ENDIF (WIN32)
-
-OPTION(ENABLE_PORTAUDIO
-       "Use portaudio(3) to play sounds if available" ${DEFAULT_PA})
-SET (HAVE_PORTAUDIO "")
-
-IF(ARCH MATCHES "arm*")
-    SET( ENABLE_PORTAUDIO OFF)
-    MESSAGE (WARNING "Disabling PORTAUDIO for arm* platform")
-ENDIF(ARCH MATCHES "arm*")
-
-IF (NOT ENABLE_PORTAUDIO MATCHES OFF)
-  INCLUDE("FindPortaudio")
-  IF (PORTAUDIO_FOUND)
-    MESSAGE (STATUS "Portaudio Found")
-    INCLUDE_DIRECTORIES(${PORTAUDIO_INCLUDE_DIRS})
-    SET(LATE_LIBS ${LATE_LIBS} ${PORTAUDIO_LIBRARIES})
-    ADD_DEFINITIONS(${PORTAUDIO_DEFINITIONS})
-    SET(HAVE_PORTAUDIO 1)
-  ELSEIF (ENABLE_PORTAUDIO MATCHES ON)
-    MESSAGE (WARNING "ENABLE_PORTAUDIO is set but I cannot find portaudio")
-    SET(HAVE_PORTAUDIO "")
-  ENDIF()
-ENDIF ()
-
-SET(HAVE_SNDFILE "")
-IF (NOT ENABLE_SNDFILE MATCHES OFF)
-  INCLUDE(FindLibSndfile)
-  IF(LIBSNDFILE_FOUND)
-    MESSAGE (STATUS "libsndfile Found")
-    INCLUDE_DIRECTORIES(${LIBSNDFILE_INCLUDE_DIRS})
-    SET(LATE_LIBS ${LATE_LIBS} ${LIBSNDFILE_LIBRARIES})
-    SET(HAVE_SNDFILE 1)
-  ELSEIF (ENABLE_SNDFILE MATCHES ON)
-    MESSAGE (WARNING "ENABLE_LIBSNDFILE is set but I cannot find libsndfile")
-  ENDIF()
-ENDIF ()
+Include("SoundConfig")
 
 add_subdirectory("libs/nmea0183")
 INCLUDE_DIRECTORIES(${CMAKE_SOURCE_DIR}/libs/nmea0183/src)
@@ -1055,11 +989,6 @@ SET(HDRS
     include/FontMgr.h
     include/FontDesc.h
     include/vector2D.h
-    include/OCPN_Sound.h
-    include/OcpnWxSound.h
-    include/SoundFactory.h
-    include/SoundLoaderFactory.h
-    include/SystemCmdSound.h
     include/NMEALogWindow.h
     include/WindowDestroyListener.h
     include/TTYWindow.h
@@ -1109,7 +1038,6 @@ SET(HDRS
     include/multiplexer.h
     include/OCPNRegion.h
     include/LLRegion.h
-    include/SoundFileLoader.h
     include/TrackPropDlg.h
     include/LinkPropDlg.h
     include/viewport.h
@@ -1156,12 +1084,6 @@ SET(SRCS
     src/Select.cpp
     src/FontMgr.cpp
     src/FontDesc.cpp
-    src/OCPN_Sound.cpp
-    src/OcpnWxSound.cpp
-    src/SoundFactory.cpp
-    src/SoundFileLoader.cpp
-    src/SoundLoaderFactory.cpp
-    src/SystemCmdSound.cpp
     src/NMEALogWindow.cpp
     src/TTYWindow.cpp
     src/TTYScroll.cpp
@@ -1254,23 +1176,6 @@ IF(NOT WIN32 AND NOT APPLE AND NOT QT_ANDROID AND OCPN_USE_CRASHREPORT)
   SET(SRCS ${SRCS} src/crashprint.cpp)
 ENDIF(NOT WIN32 AND NOT APPLE AND NOT QT_ANDROID AND OCPN_USE_CRASHREPORT)
 
-IF(QT_ANDROID)
-  SET(HDRS ${HDRS} include/androidUTIL.h)
-  SET(SRCS ${SRCS} src/androidUTIL.cpp)
-  SET(SRCS ${SRCS} src/AndroidSound.cpp)
-  SET(HDRS ${HDRS} include/AndroidSound.h)
-ENDIF(QT_ANDROID)
-
-IF (PORTAUDIO_FOUND)
-    SET(HDRS ${HDRS} include/PortAudioSound.h)
-    SET(SRCS ${SRCS} src/PortAudioSound.cpp)
-ENDIF ()
-
-IF (LIBSNDFILE_FOUND)
-    SET(HDRS ${HDRS} include/SndfileSoundLoader.h)
-    SET(SRCS ${SRCS} src/SndfileSoundLoader.cpp)
-ENDIF ()
-
 #  Search for wxWidgets 2.9 or newer
 STRING(REGEX MATCHALL "-2.9|-3." wx_Version_2.9+ "${wxWidgets_INCLUDE_DIRS}")
 IF(wx_Version_2.9+)
@@ -1303,6 +1208,9 @@ IF(OPENGL_FOUND)
   )
 ENDIF(OPENGL_FOUND)
 
+add_subdirectory(libs/sound)
+INCLUDE_DIRECTORIES(${CMAKE_SOURCE_DIR}/libs/sound/include)
+SET(EXTRA_LIBS ${EXTRA_LIBS} SOUND)
 
 add_subdirectory(libs/wxJSON)
 INCLUDE_DIRECTORIES(${CMAKE_SOURCE_DIR}/libs/wxJSON/include)

@@ -58,8 +58,6 @@
 #          -DwxQt_Build=build_android_53 -DwxQt_Base=/home/dsr/Projects/wxqt/wxWidgets
 #          -DQt_Base /home/dsr/Qt/5.3) ..
 #TODO:
-# - Clean up global ADD_DEFINITIONS used for configuration
-# - Fix -g antipattern, default build target mess.
 # - Build profiles
 # - cross platform compiling
 # - Better USE_BUNDLED_LIBS option
@@ -175,7 +173,7 @@ if ( CMAKE_VERSION VERSION_GREATER 3.9 )
 endif()
 
 IF( NOT CMAKE_BUILD_TYPE )
-  SET(CMAKE_BUILD_TYPE Release CACHE STRING
+  SET(CMAKE_BUILD_TYPE RelWithDebInfo CACHE STRING
       "Choose type of build: None Debug Release RelWithDebInfo MinSizeRel."
       FORCE
   )
@@ -249,12 +247,18 @@ if ( CMAKE_VERSION VERSION_GREATER 3.9 )
     set(CMAKE_CXX_CPPCHECK ${CPPCHECK_EXECUTABLE})
   endif()
 endif()
-
+message(STATUS "Default compiler options:")
+message(STATUS "CMAKE_CXX_FLAGS: ${CMAKE_CXX_FLAGS}")
+message(STATUS "CMAKE_CXX_FLAGS_DEBUG: ${CMAKE_CXX_FLAGS_DEBUG}")
+message(STATUS "CMAKE_CXX_FLAGS_MINSIZEREL: ${CMAKE_CXX_FLAGS_MINSIZEREL}")
+message(STATUS "CMAKE_CXX_FLAGS_RELEASE: ${CMAKE_CXX_FLAGS_RELEASE}")
+message(STATUS 
+   "CMAKE_CXX_FLAGS_RELWITHDEBINFO: ${CMAKE_CXX_FLAGS_RELWITHDEBINFO}")
 #ADD_COMPILE_OPTIONS( "-Wall" "-ansi" "-pedantic" "-Wno-variadic-macros" )
 #TODO: Should we use  -fno-stack-protector
 #  IF NOT DEBUGGING CFLAGS="-O2 -march=native"
 IF(NOT WIN32 AND NOT APPLE )
-  ADD_COMPILE_OPTIONS( "-Wall"  "-g"
+  ADD_COMPILE_OPTIONS( "-Wall"
       "-Wno-unused"
       "-fexceptions"
       "-rdynamic"
@@ -276,7 +280,7 @@ IF(NOT WIN32 AND NOT APPLE )
 ENDIF(NOT WIN32 AND NOT APPLE)
 
 IF(MINGW)
-    ADD_COMPILE_OPTIONS( "-Wall" "-g"
+    ADD_COMPILE_OPTIONS( "-Wall"
         "-Wno-unused"
         "-Wno-cpp"
         "-fexceptions"
@@ -285,7 +289,7 @@ IF(MINGW)
 ENDIF(MINGW)
 
 IF( APPLE )
-    ADD_COMPILE_OPTIONS( "-Wall" "-g"
+    ADD_COMPILE_OPTIONS( "-Wall"
         "-Wno-unused"
         "-fexceptions"
         "-Wno-overloaded-virtual"

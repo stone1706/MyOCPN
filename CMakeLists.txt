@@ -664,7 +664,6 @@ IF(APPLE)
             src/DarkMode.mm
             src/DarkMode.h
         )
-        ADD_DEFINITIONS(-DOCPN_USE_DARKMODE)
     ENDIF ()
     SET(SRCS ${SRCS} src/MacSound.mm src/MacSound.h)
 ENDIF()
@@ -719,8 +718,7 @@ IF (ARCH MATCHES "arm*" AND (NOT QT_ANDROID) )
   find_path(OPENGLESv1_INCLUDE_DIR GLES/gl.h )
   IF (OPENGLESv1_INCLUDE_DIR)
     MESSAGE (STATUS "Found OpenGLESv1")
-    ADD_DEFINITIONS(-DocpnUSE_GLES)
-    ADD_DEFINITIONS(-DocpnUSE_GL)
+    ADD_DEFINITIONS(-DocpnUSE_GL)   # ocpnUSE_GLES is in config.h
 
     SET(OPENGLES_FOUND "YES")
     SET(OPENGL_FOUND "YES")
@@ -1019,8 +1017,7 @@ IF(OCPN_USE_SVG)
     ENDIF (WIN32)
     target_link_libraries(${PACKAGE_NAME} PRIVATE ocpn::cairo ocpn::expat)
  
-    ADD_DEFINITIONS(-DUSE_RENDER_CAIRO)
-    ADD_DEFINITIONS(-DocpnUSE_SVG)
+    ADD_DEFINITIONS(-DocpnUSE_SVG)   # Goes into config.h, leave as global
 
     PKG_SEARCH_MODULE(WXSVG libwxsvg wxsvg)
     IF (WXSVG_FOUND AND USE_BUNDLED_LIBS MATCHES "OFF")
@@ -1559,8 +1556,6 @@ IF(WIN32)
   IF(MINGW)
     # assuming wxwidgets is compiled with unicode, this is needed for mingw headers
     ADD_DEFINITIONS( " -DUNICODE" )
-    # this is needed for garmin jeeps code
-    ADD_DEFINITIONS( " -D_UNICODE" )
     TARGET_LINK_LIBRARIES(${PACKAGE_NAME}
       ${OPENGL_LIBRARIES}
       wsock32.lib

@@ -860,6 +860,7 @@ ENDIF(OCPN_USE_CRASHREPORT)
 
 add_subdirectory("libs/sqlite")
 add_subdirectory("libs/SQLiteCpp")
+target_link_libraries(${PACKAGE_NAME} PRIVATE ocpn::sqlite)
 target_link_libraries(${PACKAGE_NAME} PRIVATE ocpn::sqlite_cpp)
 
 IF(UNIX)

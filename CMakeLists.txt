@@ -690,6 +690,13 @@ else ()
     ADD_EXECUTABLE(${PACKAGE_NAME} ${HDRS} ${SRCS})
 endif ()
 
+set_target_properties(${PACKAGE_NAME} PROPERTIES
+    ENABLE_EXPORTS 1
+    OUTPUT_NAME opencpn
+    ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/lib
+)
+set(OPENCPN_LINK_TARGET ${PACKAGE_NAME})  # For plugin linkage.
+
 target_include_directories(${PACKAGE_NAME} PRIVATE ${CMAKE_SOURCE_DIR}/include)
 
 FIND_PACKAGE(Gettext REQUIRED)

@@ -446,7 +446,7 @@ public:
     //! Sets the host Port.  This allows you to specify a specific (non-
     //! default port) if you like.  The value -1 means that the default port
     //! will be used.
-    void		SetPort(const long& iPort);
+    void		SetCurlPort(const long& iPort);
     long		GetPort() const;
 
     //! Sets the Username. If no username is

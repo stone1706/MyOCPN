@@ -35,7 +35,7 @@ else ()
   )
   message(STATUS "Using systrem SQLite library version ${SQLITE_VERSION}.")
   if(${SQLITE_VERSION} LESS "3019000")
-    target_compile_definitions(_SQLITE PRIVATE -DSQLITE_USE_LEGACY_STRUCT)
+      target_compile_definitions(_SQLITE INTERFACE -DSQLITE_USE_LEGACY_STRUCT)
   endif()
 endif ()
 

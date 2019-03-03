@@ -651,7 +651,7 @@ std::string wxCurlBase::GetURL() const
     return std::string(s.mb_str());
 }
 
-void wxCurlBase::SetPort(const long& iPort)
+void wxCurlBase::SetCurlPort(const long& iPort)
 {
     m_iHostPort = iPort;
 }

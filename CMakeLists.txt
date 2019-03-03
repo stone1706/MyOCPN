@@ -692,12 +692,6 @@ endif ()
 
 target_include_directories(${PACKAGE_NAME} PRIVATE ${CMAKE_SOURCE_DIR}/include)
 
-if (MINGW)
-    target_link_libraries(${PACKAGE_NAME} PRIVATE psapi)
-    target_link_libraries(${PACKAGE_NAME} PRIVATE winmm)
-    target_link_libraries(${PACKAGE_NAME} PRIVATE setupapi)
-endif ()
-
 FIND_PACKAGE(Gettext REQUIRED)
 
 add_subdirectory(libs/ssl_sha1)
@@ -1167,6 +1161,13 @@ IF (OPENGL_FOUND)
       target_link_libraries(${PACKAGE_NAME} PUBLIC lz4::lz4)
   endif ()
 ENDIF (OPENGL_FOUND)
+
+
+if (MINGW)
+    target_link_libraries(${PACKAGE_NAME} PRIVATE psapi)
+    target_link_libraries(${PACKAGE_NAME} PRIVATE winmm)
+    target_link_libraries(${PACKAGE_NAME} PRIVATE setupapi)
+endif ()
 
 #TODO
 #dnl

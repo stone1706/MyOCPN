@@ -289,6 +289,8 @@ IF(MINGW)
         "-fexceptions"
         "-fno-strict-aliasing"
     )
+    ADD_DEFINITIONS("-DPSAPI_VERSION=1")
+    ADD_DEFINITIONS("-DUNICODE")
 ENDIF(MINGW)
 
 IF( APPLE )
@@ -689,6 +691,12 @@ else ()
 endif ()
 
 target_include_directories(${PACKAGE_NAME} PRIVATE ${CMAKE_SOURCE_DIR}/include)
+
+if (MINGW)
+    target_link_libraries(${PACKAGE_NAME} PRIVATE psapi)
+    target_link_libraries(${PACKAGE_NAME} PRIVATE winmm)
+    target_link_libraries(${PACKAGE_NAME} PRIVATE setupapi)
+endif ()
 
 FIND_PACKAGE(Gettext REQUIRED)
 
@@ -1520,7 +1528,6 @@ ENDIF(CMAKE_HOST_WIN32)
 
 IF(MINGW)
   # assuming wxwidgets is compiled with unicode, this is needed for mingw headers
-  ADD_DEFINITIONS( " -DUNICODE" )
   TARGET_LINK_LIBRARIES(${PACKAGE_NAME} PRIVATE
     ${OPENGL_LIBRARIES}
     wsock32.lib

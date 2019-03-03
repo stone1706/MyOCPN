@@ -172,7 +172,7 @@ void wxCurlConnectionSettingsPanel::SetCURLOptions(wxCurlBase *p)
     {
         long port = -1;     // -1 tell libCURL to use the default port
         m_pPort->GetValue().ToLong(&port);
-        p->SetPort(port);
+        p->SetCurlPort(port);
     }
 
     if (HasFlag(wxCCSP_AUTHENTICATION_OPTIONS))

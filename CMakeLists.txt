@@ -289,6 +289,8 @@ IF(MINGW)
         "-fexceptions"
         "-fno-strict-aliasing"
     )
+    ADD_DEFINITIONS("-DPSAPI_VERSION=1")
+    ADD_DEFINITIONS("-DUNICODE")
 ENDIF(MINGW)
 
 IF( APPLE )
@@ -1190,6 +1192,13 @@ IF (OPENGL_FOUND)
   endif ()
 ENDIF (OPENGL_FOUND)
 
+
+if (MINGW)
+    target_link_libraries(${PACKAGE_NAME} PRIVATE psapi)
+    target_link_libraries(${PACKAGE_NAME} PRIVATE winmm)
+    target_link_libraries(${PACKAGE_NAME} PRIVATE setupapi)
+endif ()
+
 #TODO
 #dnl
 #dnl Use OpenGL tesselator or Internal tesselator
@@ -1530,7 +1539,6 @@ ENDIF(CMAKE_HOST_WIN32)
 
 IF(MINGW)
   # assuming wxwidgets is compiled with unicode, this is needed for mingw headers
-  ADD_DEFINITIONS( " -DUNICODE" )
   TARGET_LINK_LIBRARIES(${PACKAGE_NAME} PRIVATE
     ${OPENGL_LIBRARIES}
     wsock32.lib

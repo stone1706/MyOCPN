@@ -20,6 +20,9 @@ set(SRC
     include/SoundLoaderFactory.h
     include/SystemCmdSound.h
 )
+if (APPLE)
+    list(APPEND SRC src/MacSound.mm include/MacSound.h)
+endif ()
 
 include(FindPortaudio)
 include(FindLibSndfile)

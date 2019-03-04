@@ -696,7 +696,6 @@ IF(APPLE)
             src/DarkMode.h
         )
     ENDIF ()
-    SET(SRCS ${SRCS} src/MacSound.mm src/MacSound.h)
 ENDIF()
 
 IF(NOT WIN32 AND NOT APPLE AND NOT QT_ANDROID AND OCPN_USE_CRASHREPORT)

@@ -211,6 +211,10 @@ OPTION(ENABLE_SYSTEM_CMD_SOUND
 # Language, compiler and static checkers setup
 #
 
+include(GetArch)
+GetArch()
+MESSAGE (STATUS "*** Build Architecture is ${ARCH}")
+
 set (CMAKE_CXX_STANDARD 11)
 message(STATUS "Setting C++11 standard via cmake standard mechanism")
 IF(NOT MSVC)
@@ -387,9 +391,6 @@ ENDIF(OCPN_CI_BUILD)
 SET(PACKAGE_VERSION
     "${VERSION_MAJOR}.${VERSION_MINOR}.${VERSION_PATCH}${VERSION_TAIL}")
 
-include(GetArch)
-GetArch()
-MESSAGE (STATUS "*** Build Architecture is ${ARCH}")
 
 #  Detect the Apple Version of the build machine
 IF (APPLE)
@@ -710,6 +711,13 @@ elseif (WIN32)
 else ()
     ADD_EXECUTABLE(${PACKAGE_NAME} ${HDRS} ${SRCS})
 endif ()
+
+add_library(_opencpn INTERFACE)    #  plugin link target.
+target_link_libraries(_opencpn INTERFACE ${PACKAGE_NAME})
+target_include_directories(_opencpn
+    INTERFACE ${CMAKE_CURRENT_SOURCE_DIR}/include
+)
+add_library(ocpn::opencpn ALIAS _opencpn)
 
 set_target_properties(${PACKAGE_NAME} PROPERTIES
     ENABLE_EXPORTS 1

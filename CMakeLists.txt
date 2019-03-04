@@ -717,6 +717,9 @@ set_target_properties(${PACKAGE_NAME} PROPERTIES
     ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
 )
 
+target_include_directories(${PACKAGE_NAME}
+      PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/include
+)
 IF(APPLE)
   target_include_directories(${PACKAGE_NAME} 
       PRIVATE /usr/X11/include /usr/X11/include/GL
@@ -892,9 +895,14 @@ IF(UNIX)
   IF(NOT QT_ANDROID) # this should be detected by the grib plugin
     FIND_PACKAGE(BZip2 REQUIRED)
     target_include_directories(${PACKAGE_NAME} PRIVATE ${BZIP2_INCLUDE_DIR})
+    target_link_libraries(${PACKAGE_NAME} PRIVATE ${BZIP2_LIBRARIES})
     FIND_PACKAGE(ZLIB REQUIRED)
     target_include_directories(${PACKAGE_NAME} PRIVATE ${ZLIB_INCLUDE_DIR})
+    target_link_libraries(${PACKAGE_NAME} PRIVATE ${ZLIB_LIBRARY})
     FIND_PACKAGE(X11)
+    IF(X11_FOUND AND NOT APPLE)
+      TARGET_LINK_LIBRARIES(${PACKAGE_NAME} PRIVATE ${X11_LIBRARIES} )
+    ENDIF()
     IF(NOT APPLE)
       #TinyXML from Homebrew is not good enough for our GpxDocument needs
       #We should probably replace it with pugixml completely anyway...
@@ -1192,11 +1200,8 @@ IF (OPENGL_FOUND)
   endif ()
 ENDIF (OPENGL_FOUND)
 
-
 if (MINGW)
-    target_link_libraries(${PACKAGE_NAME} PRIVATE psapi)
-    target_link_libraries(${PACKAGE_NAME} PRIVATE winmm)
-    target_link_libraries(${PACKAGE_NAME} PRIVATE setupapi)
+    target_link_libraries(${PACKAGE_NAME} PRIVATE psapi winmm setupapi)
 endif ()
 
 #TODO
@@ -1496,7 +1501,7 @@ IF(APPLE)
   )
   INSTALL(TARGETS ${PACKAGE_NAME} BUNDLE DESTINATION ${PREFIX_BIN} )
 
-  TARGET_LINK_LIBRARIES(${PACKAGE_NAME} ${wxWidgets_LIBRARIES})
+  TARGET_LINK_LIBRARIES(${PACKAGE_NAME} PRIVATE ${wxWidgets_LIBRARIES})
   set_target_properties(${PACKAGE_NAME} PROPERTIES MACOSX_BUNDLE_INFO_PLIST
                         "${CMAKE_SOURCE_DIR}/buildosx/Info.plist.in")
 ENDIF(APPLE)
@@ -1550,15 +1555,8 @@ IF(UNIX)
     TARGET_LINK_LIBRARIES(${PACKAGE_NAME} PRIVATE
         ${OPENGL_LIBRARIES}
         ${GETTEXT_LIBRARY}
-        ${BZIP2_LIBRARIES}
-        ${ZLIB_LIBRARY}
         SQLITE_CPP
-        sqlite3
   )
-
-  IF(X11_FOUND AND NOT APPLE)
-      TARGET_LINK_LIBRARIES(${PACKAGE_NAME} PRIVATE ${X11_LIBRARIES} )
-  ENDIF()
 
   IF(NOT APPLE AND NOT QT_ANDROID AND NOT WIN32 AND NOT X11_FOUND)
     MESSAGE(STATUS "Did not find x11 libraries, support for transparent toolbar in opengl mode cannot be detected")

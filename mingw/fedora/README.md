@@ -13,6 +13,8 @@ How?
     $ cmake -DCMAKE_TOOLCHAIN_FILE=../mingw/fedora/toolchain.cmake \
        -DOCPN_NEW_SERIAL=OFF [...] \
        ..
+    $ make 
+    $ make package
 
 Notes:
 =====

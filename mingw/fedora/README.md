@@ -5,16 +5,17 @@ Tools to build a windows 32-bit executable using the mingw toolchain.
 
 How?
 ====
-
-sudo dnf builddep opencpn-deps.spec
-cd ../../
-rm -rf build; mkdir build
-cd build;
-cmake -DCMAKE_TOOLCHAIN_FILE=../mingw/fedora/minw-toolchain.cmake [...] ..
+    $ sudo  dnf copr enable leamas/opencpn-mingw
+    $ sudo dnf builddep opencpn-deps.spec
+    $ cd ../..
+    $ rm -rf build; mkdir build
+    $ cd build;
+    $ cmake -DCMAKE_TOOLCHAIN_FILE=../mingw/fedora/toolchain.cmake \
+       -DOCPN_NEW_SERIAL=OFF [...] \
+       ..
 
 Notes:
 =====
-The build requires  updated packages available at
-https://copr.fedorainfracloud.org/coprs/leamas/opencpn-mingw/builds/
-Here is also the wx3GTK package required to build opencpn on the regular
-fedora gcc toolchain.
+The build requires updated packages, notably wx3GTK, available at
+https://copr.fedorainfracloud.org/coprs/leamas/opencpn-mingw.
+The copr enable command above sets up access to this repo.

@@ -56,10 +56,24 @@
 #          -DwxQt_Build=build_android_53 -DwxQt_Base=/home/dsr/Projects/wxqt/wxWidgets
 #          -DQt_Base /home/dsr/Qt/5.3) ..
 #TODO:
-# - Build profiles
-# - cross platform compiling
-# - Better USE_BUNDLED_LIBS option
+# - Test (rework?) wxWidgets GLU handling.
+# - Fix 3.0 requirement overall
+# - Rework options, naming conventions.
+# - Better USE_BUNDLED_LIBS option (list)
+# - Fix link libraries name (tinyxml:: > ocpn::)
+# - Silent build mode.
+# - Unbundle jasper.
 # - test with Win & OSX
+# - Separate ffmpeg configuration
+# - Separate gpsd configuration
+# - Profiling opt
+# - GNU install paths
+# - Drop -s linker flag
+# - Use list() instead of set()
+# - Review TinyXML handling
+# - Move final linking ahead of install section.
+# - Review Mingw package generation.
+# - Make missing sound libs info instead of warnings.
 # USE_GLU_TESS
 # USE_GLU_DLL
 # I also find it deficient in some areas. For instance, I cannot make it
@@ -221,14 +235,19 @@ ENDIF()
 
 if (CMAKE_VERSION VERSION_GREATER 3.4)
   if (ENABLE_CLANG_TIDY)
-    find_program (CLANG_TIDY_EXE NAMES "clang-tidy" PATHS /usr/local/opt/llvm/bin )
+    find_program (CLANG_TIDY_EXE
+      NAMES "clang-tidy"
+      PATHS /usr/local/opt/llvm/bin
+    )
     if (CLANG_TIDY_EXE)
       message(STATUS "clang-tidy found: ${CLANG_TIDY_EXE}")
       #For more, see http://clang.llvm.org/extra/clang-tidy/
       #set(CLANG_TIDY_CHECKS "-*,modernize-*")
       set(CLANG_TIDY_CHECKS "-*,performance-*")
-      set(CMAKE_CXX_CLANG_TIDY "${CLANG_TIDY_EXE};-checks=${CLANG_TIDY_CHECKS};-header-filter='${CMAKE_SOURCE_DIR}/*'"
-        CACHE STRING "" FORCE)
+      set(CMAKE_CXX_CLANG_TIDY
+        "${CLANG_TIDY_EXE};-checks=${CLANG_TIDY_CHECKS};-header-filter='${CMAKE_SOURCE_DIR}/*'"
+        CACHE STRING "" FORCE
+      )
     else()
       message(AUTHOR_WARNING "clang-tidy not found!")
       set(CMAKE_CXX_CLANG_TIDY "" CACHE STRING "" FORCE) # delete it
@@ -252,6 +271,7 @@ if ( CMAKE_VERSION VERSION_GREATER 3.9 )
     set(CMAKE_CXX_CPPCHECK ${CPPCHECK_EXECUTABLE})
   endif()
 endif()
+
 message(STATUS "Default compiler options:")
 message(STATUS "CMAKE_CXX_FLAGS: ${CMAKE_CXX_FLAGS}")
 message(STATUS "CMAKE_CXX_FLAGS_DEBUG: ${CMAKE_CXX_FLAGS_DEBUG}")
@@ -898,8 +918,9 @@ IF(OCPN_USE_CRASHREPORT)
 ENDIF(OCPN_USE_CRASHREPORT)
 
 add_subdirectory("libs/sqlite")
-add_subdirectory("libs/SQLiteCpp")
 target_link_libraries(${PACKAGE_NAME} PRIVATE ocpn::sqlite)
+
+add_subdirectory("libs/SQLiteCpp")
 target_link_libraries(${PACKAGE_NAME} PRIVATE ocpn::sqlite_cpp)
 
 IF(UNIX)
@@ -1104,7 +1125,6 @@ target_link_libraries(${PACKAGE_NAME} PRIVATE wxjson::wxjson)
 
 IF(TINYXML_FOUND)
   message (STATUS "Building with system tinyxml")
-  # FIXME: Add interface lib, use in garmin...
   add_library(TINYXML INTERFACE)
   target_include_directories(TINYXML INTERFACE ${TINYXML_INCLUDE_DIR})
   target_link_libraries(TINYXML INTERFACE ${TINYXML_LIBRARIES})
@@ -1917,16 +1937,13 @@ IF(NOT SKIP_PLUGINS)
 ENDIF ()
 
 #
-# Prepare CPACK configuration
+# Prepare CPACK configuration (MINGW)
 #
-
 if (MINGW)
   set(CMD "sed -e 's|/TRIMLEFT||' -e '/!define NSIS_PACKEDVERSION/s/^;//'")
   set(CMD "${CMD} NSIS.template.in.in >NSIS.template.in")
-  file(GENERATE
-    OUTPUT ${CMAKE_BINARY_DIR}/fix-NSIS.sh
-    CONTENT "${CMD}"
-  )
+  file(GENERATE OUTPUT ${CMAKE_BINARY_DIR}/fix-NSIS.sh CONTENT "${CMD}")
+
   add_custom_target(NSIS_config  ALL
     COMMAND /bin/sh ${CMAKE_BINARY_DIR}/fix-NSIS.sh
     DEPENDS NSIS.template.in.in

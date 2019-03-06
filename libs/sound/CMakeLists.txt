@@ -20,9 +20,6 @@ set(SRC
     include/SoundLoaderFactory.h
     include/SystemCmdSound.h
 )
-if (APPLE)
-    list(APPEND SRC src/MacSound.mm include/MacSound.h)
-endif ()
 
 include(FindPortaudio)
 include(FindLibSndfile)
@@ -32,14 +29,16 @@ include(FindLibSndfile)
 #    SimpleWxConfig()
 #endif ()
 
+IF (WIN32)
+    list(APPEND SRC src/MswSound.cpp include/MswSound.h)
+ENDIF ()
+
 if (PORTAUDIO_FOUND)
-    set(SRC ${SRC} include/PortAudioSound.h)
-    set(SRC ${SRC} src/PortAudioSound.cpp)
+    list(APPEND SRC include/PortAudioSound.h src/PortAudioSound.cpp)
 endif ()
 
 if (LIBSNDFILE_FOUND)
-    set(SRC ${SRC} include/SndfileSoundLoader.h)
-    set(SRC ${SRC} src/SndfileSoundLoader.cpp)
+    list(APPEND SRC include/SndfileSoundLoader.h src/SndfileSoundLoader.cpp)
 endif ()
 
 add_library(SOUND STATIC ${SRC})

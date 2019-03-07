@@ -35,7 +35,7 @@ elif [[ "$OCPN_TARGET" == "osx" ]]; then
                # plugin data is not included in the bundle
   make create-dmg
 elif [[ "$OCPN_TARGET" == "mingw" ]]; then
-  HERE=$(dirname $(readlink -fn $0))   # Assuming linux host w proper readlink
+  HERE="/opencpn-ci/OpenCPN"  # FIXME, this is a cludge...
   docker run --privileged -d -ti -e "container=docker"  \
       -v /sys/fs/cgroup:/sys/fs/cgroup \
       -v $HERE:/opencpn-ci:rw \

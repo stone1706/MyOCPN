@@ -9,7 +9,7 @@ matrix:
 
 before_install:
   - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then sudo apt-get -qq update; fi
-  - >
+  - |
     echo -n | openssl s_client -connect https://scan.coverity.com:443 
     | sed -ne '/-BEGIN CERTIFICATE-/,/-END CERTIFICATE-/p'
     | sudo tee -a /etc/ssl/certs/ca-
@@ -22,13 +22,13 @@ install:
         libcurl4-openssl-dev libexpat1-dev libcairo2-dev libarchive-dev
         liblzma-dev libexif-dev libsqlite3-dev libelf-dev gettext; 
     fi
-  - >
+  - |
     if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then 
-      brew install cairo libexif xz libarchive;
-      wget http://opencpn.navnux.org/build_deps/wx312_opencpn50_macos109.tar.xz;
-      tar xJf wx312_opencpn50_macos109.tar.xz -C /tmp;
-      export PATH="/usr/local/opt/gettext/bin:$PATH";
-      echo 'export PATH="/usr/local/opt/gettext/bin:$PATH"' >> ~/.bash_profile;
+      brew install cairo libexif xz libarchive
+      wget http://opencpn.navnux.org/build_deps/wx312_opencpn50_macos109.tar.xz
+      tar xJf wx312_opencpn50_macos109.tar.xz -C /tmp
+      export PATH="/usr/local/opt/gettext/bin:$PATH"
+      echo 'export PATH="/usr/local/opt/gettext/bin:$PATH"' >> ~/.bash_profile
     fi
 script:
   - ./travisci_build.sh

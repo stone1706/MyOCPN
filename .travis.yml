@@ -6,7 +6,7 @@ matrix:
       compiler: gcc
       env: OCPN_TARGET=linux
       before_install:
-        - apt-get -qq update
+        - sudo apt-get -qq update
         - >
           sudo apt-get --allow-unauthenticated install
           libwxgtk3.0-dev libwxgtk3.0-0 libgps-dev libglu1-mesa-dev
@@ -27,7 +27,7 @@ matrix:
       services:
         - docker
       before_install:
-        - apt-get -qq update
+        - sudo apt-get -qq update
         - >
           echo 'DOCKER_OPTS="-H tcp://127.0.0.1:2375 -H unix:///var/run/docker.sock -s devicemapper"'
           | sudo tee /etc/default/docker > /dev/null

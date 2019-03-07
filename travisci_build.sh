@@ -3,6 +3,8 @@
 # bailout on errror
 set -xe
 
+HERE=$(dirname $(readlink -fn $0))
+
 mkdir -p build && cd build
 if [[ "$OCPN_TARGET" == "linux" ]];
   then cmake -DCMAKE_BUILD_TYPE=Debug ..
@@ -36,7 +38,7 @@ elif [[ "$OCPN_TARGET" == "osx" ]]; then
 elif [[ "$OCPN_TARGET" == "mingw" ]]; then
   docker run --privileged -d -ti -e "container=docker"  \
       -v /sys/fs/cgroup:/sys/fs/cgroup \
-      -v $(pwd):/opencpn-ci:rw \
+      -v $HERE:/opencpn-ci:rw \
       fedora:28   /usr/sbin/init
   DOCKER_CONTAINER_ID=$(docker ps | grep fedora | awk '{print $1}')
   docker logs $DOCKER_CONTAINER_ID

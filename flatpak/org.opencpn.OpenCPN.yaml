@@ -30,7 +30,7 @@ finish-args:
 add-extensions:
     org.opencpn.OpenCPN.Plugin:
         directory: extensions
-        merge-dirs: lib/opencpn;share/opencpn/plugins;share/locale
+        merge-dirs: lib/opencpn;share/opencpn/plugins;share/locale;bin
         subdirectories: true
         no-autodownload: true
         autodelete: false

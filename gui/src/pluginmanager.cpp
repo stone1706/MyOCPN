@@ -284,6 +284,17 @@ static int ComparePlugins(PlugInContainer** p1, PlugInContainer** p2) {
   return (*p1)->Key().compare((*p2)->Key());
 }
 
+static bool IsUpdateAvailable(const PluginMetadata& metadata) {
+  auto imported_version = SemanticVersion::parse(metadata.version);
+  for (auto& md : PluginHandler::getInstance()->getAvailable()) {
+    if (!PluginHandler::getInstance()->isCompatible(md)) continue;
+    if (md.name != metadata.name) continue;
+    auto available_version = SemanticVersion::parse(md.version);
+    if (available_version > imported_version) return true;
+  }
+  return false;
+}
+
 /**
  * Handle messages for blacklisted plugins. Messages are deferred until
  * show_deferred_messages() is invoked, signaling that the UI is ready.
@@ -3584,10 +3595,10 @@ void PluginPanel::SetSelected(bool selected) {
     }
     SetActionLabel(label);
     const auto plugin_name = m_plugin.m_common_name.ToStdString();
-    // if (ocpn::exists(PluginHandler::ImportedMetadataPath(plugin_name))) {
-    // m_pButtonAction->Hide();
-    //}
-
+    if (ocpn::exists(PluginHandler::ImportedMetadataPath(plugin_name))) {
+      if (!IsUpdateAvailable(m_plugin.m_managed_metadata))
+        m_pButtonAction->Hide();
+    }
     Layout();
   } else {
     SetBackgroundColour(GetDialogColor(DLG_UNSELECTED_BACKGROUND));

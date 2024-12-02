@@ -297,7 +297,7 @@ static bool IsUpdateAvailable(const PluginMetadata& metadata) {
     if (md.name != metadata.name) continue;
     if (md.is_imported) continue;
     if (!PluginHandler::getInstance()->isCompatible(md)) continue;
-    if (ParseVersion(md) > imported_version) return true;
+    if (ParseVersion(md) >= imported_version) return true;
   }
   return false;
 }

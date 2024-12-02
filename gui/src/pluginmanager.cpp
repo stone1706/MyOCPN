@@ -284,6 +284,24 @@ static int ComparePlugins(PlugInContainer** p1, PlugInContainer** p2) {
   return (*p1)->Key().compare((*p2)->Key());
 }
 
+static SemanticVersion ParseVersion(const PluginMetadata& metadata) {
+  auto version = metadata.version;
+  // Handle tag versions like v1.2.3:
+  if (version[0] == 'v') version = version.substr(1);
+  return SemanticVersion::parse(version);
+}
+
+static bool IsUpdateAvailable(const PluginMetadata& metadata) {
+  auto imported_version = ParseVersion(metadata);
+  for (auto& md : PluginHandler::getInstance()->getAvailable()) {
+    if (md.name != metadata.name) continue;
+    if (md.is_imported) continue;
+    if (!PluginHandler::getInstance()->isCompatible(md)) continue;
+    if (ParseVersion(md) > imported_version) return true;
+  }
+  return false;
+}
+
 /**
  * Handle messages for blacklisted plugins. Messages are deferred until
  * show_deferred_messages() is invoked, signaling that the UI is ready.
@@ -3582,12 +3600,14 @@ void PluginPanel::SetSelected(bool selected) {
         m_action = ActionVerb::NOP;
         break;
     }
-    SetActionLabel(label);
     const auto plugin_name = m_plugin.m_common_name.ToStdString();
-    // if (ocpn::exists(PluginHandler::ImportedMetadataPath(plugin_name))) {
-    // m_pButtonAction->Hide();
-    //}
-
+    if (ocpn::exists(PluginHandler::ImportedMetadataPath(plugin_name))) {
+      if (IsUpdateAvailable(m_plugin.m_managed_metadata))
+        label = _("Update");
+      else
+        m_pButtonAction->Hide();
+    }
+    SetActionLabel(label);
     Layout();
   } else {
     SetBackgroundColour(GetDialogColor(DLG_UNSELECTED_BACKGROUND));

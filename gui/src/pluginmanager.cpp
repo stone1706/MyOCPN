@@ -408,9 +408,8 @@ static const std::unordered_map<PluginStatus, const char*, EnumClassHash>
          {PluginStatus::ManagedInstalledCurrentVersion, "emblem-default.svg"},
          {PluginStatus::ManagedInstalledDowngradeAvailable,
           "emblem-default.svg"},
-         {PluginStatus::PendingListRemoval, "emblem-default.svg"}
-
-        });
+         {PluginStatus::PendingListRemoval, "emblem-default.svg"},
+         {PluginStatus::Imported, "emblem-legacy-update.svg"}});
 
 static const std::unordered_map<PluginStatus, const char*, EnumClassHash>
     literalstatus_by_status(
@@ -427,7 +426,8 @@ static const std::unordered_map<PluginStatus, const char*, EnumClassHash>
           "ManagedInstalledCurrentVersion"},
          {PluginStatus::ManagedInstalledDowngradeAvailable,
           "ManagedInstalledDowngradeAvailable"},
-         {PluginStatus::PendingListRemoval, "PendingListRemoval"}
+         {PluginStatus::PendingListRemoval, "PendingListRemoval"},
+         {PluginStatus::Imported, "Imported"}
 
         });
 
@@ -3585,6 +3585,18 @@ void PluginPanel::SetSelected(bool selected) {
         m_pButtonAction->Enable();
         break;
 
+      case PluginStatus::Imported: {
+        const auto plugin_name = m_plugin.m_common_name.ToStdString();
+        if (ocpn::exists(PluginHandler::ImportedMetadataPath(plugin_name)) &&
+            IsUpdateAvailable(m_plugin.m_managed_metadata)) {
+          label = _("Update");
+          m_action = ActionVerb::UPDATE_IMPORTED_VERSION;
+        } else {
+          m_pButtonAction->Disable();
+          m_action = ActionVerb::NOP;
+        }
+      } break;
+
       case PluginStatus::Unmanaged:
         m_action = ActionVerb::NOP;
         m_pButtonAction->Hide();
@@ -3599,13 +3611,6 @@ void PluginPanel::SetSelected(bool selected) {
         label = "TBD";
         m_action = ActionVerb::NOP;
         break;
-    }
-    const auto plugin_name = m_plugin.m_common_name.ToStdString();
-    if (ocpn::exists(PluginHandler::ImportedMetadataPath(plugin_name))) {
-      if (IsUpdateAvailable(m_plugin.m_managed_metadata))
-        label = _("Update");
-      else
-        m_pButtonAction->Hide();
     }
     SetActionLabel(label);
     Layout();

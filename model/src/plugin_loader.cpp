@@ -926,7 +926,9 @@ void PluginLoader::UpdateManagedPlugins(bool keep_orphans) {
     if (!md.name.empty()) {
       auto import_path = PluginHandler::ImportedMetadataPath(md.name.c_str());
       md.is_imported = isRegularFile(import_path.c_str());
-      if (isRegularFile(PluginHandler::fileListPath(md.name).c_str())) {
+      if (md.is_imported) {
+        plugin->m_status = PluginStatus::Imported;
+      } else if (isRegularFile(PluginHandler::fileListPath(md.name).c_str())) {
         // This is an installed plugin
         PluginLoader::UpdatePlugin(plugin, md);
       } else if (IsSystemPluginName(md.name)) {

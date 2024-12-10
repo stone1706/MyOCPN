@@ -1,11 +1,4 @@
-/***************************************************************************
- *
- *
- * Project:  OpenCPN
- * Purpose:  PlugIn Manager Object
- * Author:   David Register
- *
- ***************************************************************************
+/**************************************************************************
  *   Copyright (C) 2010 by David S. Register                               *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -24,47 +17,20 @@
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
  **************************************************************************/
 
+/**
+ * \file
+ * The plugin manager GUI objects + various plugin API support.
+ */
+
 #ifndef _PLUGINMGR_H_
 #define _PLUGINMGR_H_
 
-#include <wx/wx.h>
-#include <wx/dynarray.h>
-#include <wx/dynlib.h>
-
-#include <memory>
 #include <atomic>
-#include "config.h"
+#include <memory>
+#include <string>
 
-#include "ocpn_plugin.h"
-#include "OCPN_Sound.h"
-#include "chartimg.h"
-#include "model/catalog_parser.h"
-#include "model/plugin_blacklist.h"
-#include "observable.h"
-#include "ocpndc.h"
-#include "model/ais_target_data.h"
-#include "model/comm_navmsg.h"
-#include "model/comm_vars.h"
-#include "s57chart.h"  // for Object list
-#include "model/semantic_vers.h"
-
-// For widgets...
-#include <wx/hyperlink.h>
-#include <wx/choice.h>
-#include <wx/tglbtn.h>
-#include <wx/bmpcbox.h>
-
-#ifndef __OCPN__ANDROID__
-#ifdef OCPN_USE_CURL
-#include <wx/curl/http.h>
-#include <wx/curl/dialog.h>
-#endif
-#endif
-
-//    Include wxJSON headers
-//    We undefine MIN/MAX so avoid warning of redefinition coming from
-//    json_defs.h
-//    Definitions checked manually, and are identical
+//  Undefine MIN/MAX to avoid warning of redefinition coming from
+//  json_defs.h. Definitions checked manually, and are identical
 #ifdef MIN
 #undef MIN
 #endif
@@ -73,9 +39,39 @@
 #undef MAX
 #endif
 
+#include <wx/wx.h>
+#include <wx/bmpcbox.h>
+#include <wx/choice.h>
+#include <wx/dynarray.h>
+#include <wx/dynlib.h>
+#include <wx/hyperlink.h>
 #include <wx/json_defs.h>
 #include <wx/jsonwriter.h>
+#include <wx/tglbtn.h>
+
+#ifndef __ANDROID__
+#ifdef OCPN_USE_CURL
+#include <wx/curl/dialog.h>
+#include <wx/curl/http.h>
+#include <wx/curl/thread.h>
+#endif
+#endif
+
+#include "config.h"
+
+#include "model/ais_target_data.h"
+#include "model/catalog_parser.h"
+#include "model/comm_navmsg.h"
+#include "model/comm_vars.h"
+#include "model/plugin_blacklist.h"
 #include "model/plugin_loader.h"
+#include "model/semantic_vers.h"
+#include "chartimg.h"
+#include "observable.h"
+#include "ocpndc.h"
+#include "ocpn_plugin.h"
+#include "OCPN_Sound.h"
+#include "s57chart.h"  // for Object list
 
 //    Assorted static helper routines
 

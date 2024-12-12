@@ -86,6 +86,9 @@ jobs:
     steps:
       - checkout
       - run: ci/circleci-build-android-corelib-armhf.sh
+      - store_artifacts:
+        path: ./build
+        destination: android-build
 
   build-macos:
     macos:
